@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import SearchBar from '@/components/SearchBar';
+import ErrorMessage from '@/components/ErrorMessage';
+import PokemonCard from '@/components/PokemonCard';
 
 interface Pokemon {
   id: string;
