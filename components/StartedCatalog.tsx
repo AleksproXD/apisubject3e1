@@ -1,5 +1,6 @@
 import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface StarterPokemon {
   id: string;
@@ -26,7 +27,26 @@ const STARTERS = [
   { id: 387, name: 'turtwig', region: 'Sinnoh' },
   { id: 390, name: 'chimchar', region: 'Sinnoh' },
   { id: 393, name: 'piplup', region: 'Sinnoh' },
+  { id: 495, name: 'snivy', region: 'Unova' },
+  { id: 498, name: 'tepig', region: 'Unova' },
+  { id: 501, name: 'oshawott', region: 'Unova' },
+  { id: 650, name: 'chespin', region: 'Kalos' },
+  { id: 653, name: 'fennekin', region: 'Kalos' },
+  { id: 656, name: 'froakie', region: 'Kalos' },
+  { id: 722, name: 'rowlet', region: 'Alola' },
+  { id: 725, name: 'litten', region: 'Alola' },
+  { id: 728, name: 'popplio', region: 'Alola' },
 ];
+
+const REGION_COLORS: any = {
+  'Kanto': { gradient: ['#ef4444', '#dc2626'], text: '#fef2f2', shadow: '#991b1b' },
+  'Johto': { gradient: ['#f59e0b', '#d97706'], text: '#fffbeb', shadow: '#92400e' },
+  'Hoenn': { gradient: ['#10b981', '#059669'], text: '#ecfdf5', shadow: '#065f46' },
+  'Sinnoh': { gradient: ['#3b82f6', '#2563eb'], text: '#eff6ff', shadow: '#1e3a8a' },
+  'Unova': { gradient: ['#6366f1', '#4f46e5'], text: '#eef2ff', shadow: '#312e81' },
+  'Kalos': { gradient: ['#ec4899', '#db2777'], text: '#fdf2f8', shadow: '#9f1239' },
+  'Alola': { gradient: ['#f97316', '#ea580c'], text: '#fff7ed', shadow: '#9a3412' },
+};
 
 const getTypeColor = (type: string) => {
   const colors: any = {
@@ -36,6 +56,9 @@ const getTypeColor = (type: string) => {
     poison: '#A040A0',
     normal: '#A8A878',
     electric: '#F8D030',
+    flying: '#A890F0',
+    psychic: '#F85888',
+    dark: '#705848',
   };
   return colors[type] || '#68A090';
 };
@@ -51,8 +74,8 @@ export default function StarterCatalog({ onSelectStarter }: StarterCatalogProps)
   const loadStarters = async () => {
     try {
       const starterPromises = STARTERS.map(async (starter) => {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${starter.id}`);
-        const data = await response.json();
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${starter.id}`);
+        const data = response.data;
         return {
           id: data.id.toString().padStart(3, '0'),
           name: data.name,
@@ -81,9 +104,9 @@ export default function StarterCatalog({ onSelectStarter }: StarterCatalogProps)
 
   if (loading) {
     return (
-      <View className="py-8 items-center">
+      <View className="py-12 items-center">
         <ActivityIndicator size="large" color="white" />
-        <Text className="text-white text-base mt-3">
+        <Text className="text-white text-lg mt-4 font-semibold">
           Cargando Pokémon iniciales...
         </Text>
       </View>
@@ -92,51 +115,87 @@ export default function StarterCatalog({ onSelectStarter }: StarterCatalogProps)
 
   return (
     <View className="mb-6">
-      <Text className="text-2xl font-bold text-white text-center mb-4">
-        Pokémon Iniciales por Región
-      </Text>
-
-      {Object.entries(groupedStarters).map(([region, regionStarters]) => (
-        <View key={region} className="mb-6">
-          <Text className="text-xl font-bold text-yellow-300 mb-3">
-            {region}
-          </Text>
-          <View className="flex-row flex-wrap gap-3">
-            {regionStarters.map((starter) => (
-              <TouchableOpacity
-                key={starter.id}
-                onPress={() => onSelectStarter(starter.name)}
-                className="bg-white rounded-2xl p-4 items-center border-2 border-purple-200"
-                style={{ width: '30%' }}
+      {Object.entries(groupedStarters).map(([region, regionStarters]) => {
+        const colors = REGION_COLORS[region];
+        return (
+          <View key={region} className="mb-8">
+            <View 
+              className="rounded-2xl p-4 mb-4 shadow-lg"
+              style={{ 
+                backgroundColor: colors.gradient[0],
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8
+              }}
+            >
+              <Text 
+                className="text-2xl font-black text-center tracking-wider"
+                style={{ color: colors.text }}
               >
-                <Image 
-                  source={{ uri: starter.image }}
-                  className="w-24 h-24"
-                />
-                <Text className="text-xs text-purple-700 font-semibold mt-2">
-                  #{starter.id}
-                </Text>
-                <Text className="text-sm font-bold text-purple-900 capitalize">
-                  {starter.name}
-                </Text>
-                <View className="flex-row gap-1 mt-2">
-                  {starter.types.map((type) => (
-                    <View
-                      key={type}
-                      className="py-1 px-2 rounded-full"
-                      style={{ backgroundColor: getTypeColor(type) }}
-                    >
-                      <Text className="text-xs font-semibold text-white capitalize">
-                        {type}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            ))}
+                🗺️ {region.toUpperCase()}
+              </Text>
+            </View>
+
+            <View className="flex-row flex-wrap justify-center gap-4">
+              {regionStarters.map((starter) => (
+                <TouchableOpacity
+                  key={starter.id}
+                  onPress={() => onSelectStarter(starter.name)}
+                  className="bg-white rounded-3xl p-5 items-center shadow-xl border-4"
+                  style={{ 
+                    width: '28%',
+                    borderColor: colors.gradient[1],
+                    shadowColor: colors.shadow,
+                    shadowOffset: { width: 0, height: 6 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 10,
+                    elevation: 10
+                  }}
+                >
+                  <View 
+                    className="rounded-full p-3 mb-2"
+                    style={{ backgroundColor: colors.gradient[0] + '30' }}
+                  >
+                    <Image 
+                      source={{ uri: starter.image }}
+                      className="w-20 h-20"
+                    />
+                  </View>
+                  
+                  <View 
+                    className="px-3 py-1 rounded-full mb-2"
+                    style={{ backgroundColor: colors.gradient[1] }}
+                  >
+                    <Text className="text-xs text-white font-bold">
+                      #{starter.id}
+                    </Text>
+                  </View>
+
+                  <Text className="text-base font-black text-gray-800 capitalize mb-2 text-center">
+                    {starter.name}
+                  </Text>
+
+                  <View className="flex-row gap-1 flex-wrap justify-center">
+                    {starter.types.map((type) => (
+                      <View
+                        key={type}
+                        className="py-1 px-3 rounded-full"
+                        style={{ backgroundColor: getTypeColor(type) }}
+                      >
+                        <Text className="text-xs font-bold text-white capitalize">
+                          {type}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }

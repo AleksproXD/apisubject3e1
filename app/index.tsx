@@ -5,6 +5,7 @@ import StarterCatalog from '@/components/StartedCatalog';
 import "@/global.css";
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import axios from 'axios';
 
 interface Pokemon {
   id: string;
@@ -68,18 +69,11 @@ const Index = () => {
       setError('');
       setPokemon(null);
 
-      const response = await fetch(
+      const response = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase()}`
       );
       
-      if (!response.ok) {
-        // Si no encuentra el Pokémon, mostrar MissingNo.
-        setPokemon(createMissingNo());
-        setLoading(false);
-        return;
-      }
-
-      const data = await response.json();
+      const data = response.data;
 
       const pokemonData: Pokemon = {
         id: data.id.toString().padStart(3, '0'),
@@ -97,6 +91,7 @@ const Index = () => {
       setPokemon(pokemonData);
       setLoading(false);
     } catch (err) {
+      // Si hay error (404 u otro), mostrar MissingNo.
       setPokemon(createMissingNo());
       setLoading(false);
     }
