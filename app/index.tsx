@@ -1,6 +1,7 @@
 import ErrorMessage from '@/components/ErrorMessage';
 import PokemonCard from '@/components/PokemonCard';
 import SearchBar from '@/components/SearchBar';
+import StarterCatalog from '@/components/StartedCatalog';
 import "@/global.css";
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -115,6 +116,13 @@ const Index = () => {
             onSearch={searchPokemon}
             loading={loading}
           />
+
+          {!pokemon && !loading && (
+            <StarterCatalog onSelectStarter={(name) => {
+              setSearchTerm(name);
+              setTimeout(() => searchPokemon(), 100);
+            }} />
+          )}
 
           {loading && (
             <View className="py-8 items-center">
