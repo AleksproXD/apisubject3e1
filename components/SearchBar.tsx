@@ -21,7 +21,8 @@ export default function SearchBar({ searchTerm, setSearchTerm, onSearch, loading
       <TouchableOpacity
         onPress={onSearch}
         disabled={loading}
-        className={`px-8 py-4 rounded-xl justify-center ${loading ? 'bg-gray-400' : 'bg-purple-600'}`}
+        className="px-8 py-4 rounded-xl justify-center bg-pink-700 border-2 border-pink-900"
+        style={{ opacity: loading ? 0.5 : 1 }}
       >
         <Text className="text-base font-bold text-white">
           {loading ? 'Buscando...' : 'Buscar'}

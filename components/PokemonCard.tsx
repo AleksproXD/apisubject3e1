@@ -3,7 +3,7 @@ import { View, Text, Image } from 'react-native';
 interface Pokemon {
   id: string;
   name: string;
-  image: string;
+  image: string | any;  // Cambiado para aceptar URLs y require()
   types: string[];
   height: string;
   weight: string;
@@ -28,6 +28,8 @@ const getTypeColor = (type: string) => {
 };
 
 export default function PokemonCard({ pokemon }: PokemonCardProps) {
+  if (!pokemon) return null;
+  
   return (
     <View className="bg-white rounded-3xl p-6 border-2 border-purple-200">
       {/* Encabezado */}
@@ -56,15 +58,13 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
 
       {/* Imagen */}
       <View className="bg-purple-50 rounded-2xl p-6 mb-6 items-center border-2 border-purple-100">
-        <Image 
-          source={{ uri: pokemon.image }}
-          className="w-52 h-52"
-          style={{ 
-            resizeMode: 'contain',
-           
-          }}
-        />
-      </View>
+  <View className="w-52 h-52 overflow-hidden items-center justify-center">
+    <Image 
+      source={typeof pokemon.image === 'string' ? { uri: pokemon.image } : pokemon.image}
+      className="w-full h-full"
+    />
+  </View>
+</View>
 
       {/* Información física */}
       <View className="flex-row gap-4 mb-6">
