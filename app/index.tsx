@@ -2,6 +2,7 @@ import ErrorMessage from '@/components/ErrorMessage';
 import PokemonCard from '@/components/PokemonCard';
 import SearchBar from '@/components/SearchBar';
 import StarterCatalog from '@/components/StartedCatalog';
+import PokemonAI from '@/components/PokemonIA';
 import "@/global.css";
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -91,7 +92,6 @@ const Index = () => {
       setPokemon(pokemonData);
       setLoading(false);
     } catch (err) {
-      // Si hay error (404 u otro), mostrar MissingNo.
       setPokemon(createMissingNo());
       setLoading(false);
     }
@@ -111,6 +111,8 @@ const Index = () => {
             onSearch={searchPokemon}
             loading={loading}
           />
+
+          <PokemonAI />
 
           {!pokemon && !loading && (
             <StarterCatalog onSelectStarter={(name) => {
